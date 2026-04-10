@@ -15,15 +15,26 @@
   .header .meta { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
   .meta-field { display: flex; flex-direction: column; gap: 5px; }
   .meta-field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; color: #fff; }
-  .meta-field input { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); border-radius: 7px; color: #fff; padding: 6px 12px; font-size: 14px; font-family: inherit; width: 220px; }
+  .meta-field input { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); border-radius: 7px; color: #fff !important; padding: 6px 12px; font-size: 14px; font-family: inherit; width: 220px; }
+  .meta-field input[type="date"] { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-datetime-edit { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-datetime-edit-text { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-datetime-edit-month-field { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-datetime-edit-day-field { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-datetime-edit-year-field { color: #fff !important; }
+  .meta-field input[type="date"]::-webkit-inner-spin-button { display: none; }
+  .meta-field input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.9; cursor: pointer; }
   .meta-field input::placeholder { color: rgba(255,255,255,0.5); }
+  .meta-field input[type="date"] { color-scheme: dark; }
+  .meta-field input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.8; cursor: pointer; }
   .meta-field input:focus { outline: none; background: rgba(255,255,255,0.25); }
 
-  .live-banner { background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 0.6rem 1rem; font-size: 13px; color: #92400E; display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; background: #F59E0B; flex-shrink: 0; animation: pulse 1.6s ease-in-out infinite; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .notice { background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 0.6rem 1rem; font-size: 13px; color: #92400E; display: flex; align-items: center; gap: 8px; flex: 1; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-  .export-bar { display: flex; justify-content: flex-end; margin-bottom: 1.25rem; }
+
   .exp-btn { background: #fff; color: #1B4FD8; border: 1.5px solid #1B4FD8; border-radius: 8px; padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
   .exp-btn:hover { background: #EEF3FF; }
 
@@ -79,6 +90,25 @@
   .po-table tr:last-child td { border-bottom: none; }
   .po-footer { margin-top: 2.5rem; border-top: 1px solid #E2E8F0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
   .po-footer span { font-size: 12px; color: #94A3B8; }
+
+  /* Timer */
+  .timer-card { background: #fff; border: 1px solid #E2E8F4; border-radius: 14px; margin-bottom: 1.25rem; padding: 1.25rem 1.5rem; box-shadow: 0 1px 4px rgba(27,79,216,0.04); display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .timer-display { font-size: 48px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; min-width: 160px; color: #1a1a2e; transition: color 0.3s; }
+  .timer-display.t-green { color: #065F46; }
+  .timer-display.t-yellow { color: #92400E; }
+  .timer-display.t-red { color: #991B1B; }
+  .timer-controls { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+  .timer-input-wrap { display: flex; align-items: center; gap: 8px; }
+  .timer-input-wrap label { font-size: 12px; color: #64748B; font-weight: 600; white-space: nowrap; }
+  .timer-mins { border: 1px solid #D1DCF5; border-radius: 7px; padding: 0; font-size: 13px; font-family: inherit; color: #1a1a2e; background: #F8FAFF; width: 64px; text-align: center; height: 36px; }
+  .timer-mins:focus { outline: none; border-color: #1B4FD8; }
+  .tbtn { border: 1px solid transparent; border-radius: 7px; padding: 0 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; height: 36px; line-height: 36px; transition: background 0.15s; white-space: nowrap; }
+  .tbtn-start { background: #1B4FD8; color: #fff; border-color: #1B4FD8; }
+  .tbtn-start:hover { background: #1641b5; border-color: #1641b5; }
+  .tbtn-pause { background: #F1F5F9; color: #475569; border-color: #E2E8F0; }
+  .tbtn-pause:hover { background: #E2E8F0; }
+  .tbtn-reset { background: #F1F5F9; color: #475569; border-color: #E2E8F0; }
+  .tbtn-reset:hover { background: #E2E8F0; }
   @media print { .po-actions { display: none !important; } body { background: #fff; } }
 </style>
 </head>
@@ -89,12 +119,31 @@
     <div class="meta">
       <div class="meta-field"><label>Club Name</label><input id="clubName" value="Speech Weavers" /></div>
       <div class="meta-field"><label>Meeting Date</label><input id="meetingDate" type="date" /></div>
+      <div class="meta-field"><label>Meeting Number</label><input id="meetingNumber" placeholder="e.g. 142" /></div>
       <div class="meta-field"><label>Timer's Name</label><input id="timerName" placeholder="Your name" /></div>
     </div>
   </div>
 
-  <div class="live-banner"><div class="dot"></div><span>Live log — members can bookmark or reload this page to see the latest times</span></div>
-  <div class="export-bar"><button class="exp-btn" onclick="openSummary()">Summary</button></div>
+
+  <!-- Timer -->
+  <div class="timer-card">
+    <div class="timer-display" id="timerDisplay">0:00</div>
+    <div style="flex:1">
+      <div class="timer-controls">
+        <div class="timer-input-wrap">
+          <label>Minutes</label>
+          <input class="timer-mins" id="timerMins" type="number" value="7" min="1" max="60" />
+        </div>
+        <button class="tbtn tbtn-start" id="timerStartBtn" onclick="timerStart()">Start</button>
+        <button class="tbtn tbtn-pause" id="timerPauseBtn" onclick="timerPause()" style="display:none">Pause</button>
+        <button class="tbtn tbtn-reset" onclick="timerReset()">Reset</button>
+      </div>
+    </div>
+  </div>
+  <div class="top-bar">
+    <div class="notice">&#9888; Note: refreshing or closing this page will clear all entered data.</div>
+    <button class="exp-btn" onclick="openSummary()">Generate Report</button>
+  </div>
 
   <div class="section">
     <div class="section-header"><h2>Prepared Speeches</h2><button class="add-btn" onclick="addRow('prepared')">+ Add Speaker</button></div>
@@ -235,9 +284,10 @@ function totalSpeakers() {
 }
 
 function openSummary() {
-  var club  = document.getElementById('clubName').value || '—';
-  var date  = document.getElementById('meetingDate').value;
-  var timer = document.getElementById('timerName').value || '—';
+  var club    = document.getElementById('clubName').value || '—';
+  var date    = document.getElementById('meetingDate').value;
+  var timer   = document.getElementById('timerName').value || '—';
+  var meetNum = document.getElementById('meetingNumber').value || '';
   var fmtDate = date
     ? new Date(date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
     : '—';
@@ -249,10 +299,11 @@ function openSummary() {
     + '<button class="po-close-btn" onclick="closeSummary()">Close</button>'
     + '</div>'
     + '<div class="po-header">'
-    + '<div class="po-title">Timer Summary</div>'
+    + '<div class="po-title">Timer Report</div>'
     + '<div class="po-meta">'
     + '<span><strong>Club:</strong> ' + club + '</span>'
     + '<span><strong>Date:</strong> ' + fmtDate + '</span>'
+    + (meetNum ? '<span><strong>Meeting No:</strong> ' + meetNum + '</span>' : '')
     + '<span><strong>Timer:</strong> ' + timer + '</span>'
     + '<span><strong>Generated:</strong> ' + new Date().toLocaleTimeString() + '</span>'
     + '</div></div>'
@@ -299,6 +350,87 @@ function closeSummary() {
   document.getElementById('print-overlay').classList.remove('visible');
 }
 
+
+/* ---- Timer ---- */
+var timerInterval = null;
+var timerRunning  = false;
+var timerTotal    = 0;
+var timerElapsed  = 0;
+
+function timerStart() {
+  var mins = parseInt(document.getElementById('timerMins').value, 10);
+  if (isNaN(mins) || mins < 1) mins = 7;
+  if (timerElapsed === 0) timerTotal = mins * 60;
+  timerRunning = true;
+  document.getElementById('timerStartBtn').style.display = 'none';
+  document.getElementById('timerPauseBtn').style.display = '';
+  timerInterval = setInterval(timerTick, 1000);
+}
+
+function timerPause() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  document.getElementById('timerStartBtn').style.display = '';
+  document.getElementById('timerPauseBtn').style.display = 'none';
+}
+
+function timerReset() {
+  clearInterval(timerInterval);
+  timerRunning  = false;
+  timerElapsed  = 0;
+  timerTotal    = 0;
+  document.getElementById('timerStartBtn').style.display = '';
+  document.getElementById('timerPauseBtn').style.display = 'none';
+  document.getElementById('timerDisplay').textContent = '0:00';
+  document.getElementById('timerDisplay').className = 'timer-display';
+}
+
+function timerTick() {
+  timerElapsed++;
+  var display = document.getElementById('timerDisplay');
+
+  // Count up display
+  var m = Math.floor(timerElapsed / 60);
+  var s = timerElapsed % 60;
+  display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+  // Bar shrinks based on total
+  var pct = ((timerTotal - timerElapsed) / timerTotal) * 100;
+  if (pct < 0) pct = 0;
+  bar.style.width = pct + '%';
+
+  // Toastmasters timing presets (in seconds)
+  // Prepared Speeches: 7min set  → green@5:00, yellow@6:00, red@7:00+
+  // Table Topics:      2min set  → green@1:00, yellow@1:30, red@2:00+
+  // Speech Evals:      3min set  → green@2:00, yellow@2:30, red@3:00+
+  // Custom/other:      black until red at timerTotal+
+  var mins = timerTotal / 60;
+  var greenAt, yellowAt, redAt;
+
+  if (mins === 7) {
+    greenAt = 300; yellowAt = 360; redAt = 420;
+  } else if (mins === 2) {
+    greenAt = 60; yellowAt = 90; redAt = 120;
+  } else if (mins === 3) {
+    greenAt = 120; yellowAt = 150; redAt = 180;
+  } else {
+    // Custom: stay black, go red at timerTotal
+    greenAt = null; yellowAt = null; redAt = timerTotal;
+  }
+
+  if (greenAt !== null && timerElapsed >= redAt) {
+    display.className = 'timer-display t-red';
+      } else if (greenAt !== null && timerElapsed >= yellowAt) {
+    display.className = 'timer-display t-yellow';
+      } else if (greenAt !== null && timerElapsed >= greenAt) {
+    display.className = 'timer-display t-green';
+      } else if (greenAt === null && timerElapsed >= redAt) {
+    display.className = 'timer-display t-red';
+      } else {
+    display.className = 'timer-display';
+      label.textContent = 'Running — ' + m + 'm ' + s + 's';
+  }
+}
 renderSection('prepared');
 renderSection('topics');
 renderSection('eval');
