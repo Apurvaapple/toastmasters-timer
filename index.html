@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Toastmasters Timer Log</title>
+<title>Timer Log</title>
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F4F6FB; color: #1a1a2e; min-height: 100vh; }
@@ -84,7 +85,7 @@
 <body>
 <div class="page">
   <div class="header">
-    <h1>Toastmasters Timer Log</h1>
+    <h1>Timer Log</h1>
     <div class="meta">
       <div class="meta-field"><label>Club Name</label><input id="clubName" value="Speech Weavers" /></div>
       <div class="meta-field"><label>Meeting Date</label><input id="meetingDate" type="date" /></div>
@@ -93,7 +94,7 @@
   </div>
 
   <div class="live-banner"><div class="dot"></div><span>Live log — members can bookmark or reload this page to see the latest times</span></div>
-  <div class="export-bar"><button class="exp-btn" onclick="openSummary()">Export / Print Summary</button></div>
+  <div class="export-bar"><button class="exp-btn" onclick="openSummary()">Summary</button></div>
 
   <div class="section">
     <div class="section-header"><h2>Prepared Speeches</h2><button class="add-btn" onclick="addRow('prepared')">+ Add Speaker</button></div>
@@ -122,11 +123,12 @@
     <div id="eval-list"></div>
   </div>
 
-  <div class="footer-note">Toastmasters Timer Log &mdash; session data resets on page close.</div>
+  <div class="footer-note">Timer Log &mdash; session data resets on page close.</div>
 </div>
 
 <div class="print-overlay" id="print-overlay"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 var state = { prepared: [], topics: [], eval: [] };
 var idCounter = 0;
@@ -243,11 +245,11 @@ function openSummary() {
   var ol = document.getElementById('print-overlay');
   ol.innerHTML =
     '<div class="po-actions">'
-    + '<button class="po-print-btn" onclick="window.print()">Print / Save as PDF</button>'
+    + '<button class="po-print-btn" onclick="downloadJpeg()">Download as JPEG</button>'
     + '<button class="po-close-btn" onclick="closeSummary()">Close</button>'
     + '</div>'
     + '<div class="po-header">'
-    + '<div class="po-title">Meeting Timer Summary</div>'
+    + '<div class="po-title">Timer Summary</div>'
     + '<div class="po-meta">'
     + '<span><strong>Club:</strong> ' + club + '</span>'
     + '<span><strong>Date:</strong> ' + fmtDate + '</span>'
@@ -273,9 +275,24 @@ function openSummary() {
     + '<tbody>' + buildRows('eval') + '</tbody></table></div>'
     + '<div class="po-footer">'
     + '<span>Timer: ' + timer + ' &nbsp;|&nbsp; ' + club + ' &nbsp;|&nbsp; ' + fmtDate + '</span>'
-    + '<span style="color:#1B4FD8;font-weight:600">Toastmasters Timer Log</span>'
+    + '<span style="color:#1B4FD8;font-weight:600">Timer Log</span>'
     + '</div>';
   ol.classList.add('visible');
+}
+
+function downloadJpeg() {
+  var overlay = document.getElementById('print-overlay');
+  var actions = overlay.querySelector('.po-actions');
+  actions.style.display = 'none';
+  html2canvas(overlay, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(function(canvas) {
+    actions.style.display = '';
+    var link = document.createElement('a');
+    var club = document.getElementById('clubName').value || 'timer';
+    var date = document.getElementById('meetingDate').value || 'meeting';
+    link.download = club.replace(/\s+/g,'-').toLowerCase() + '-' + date + '-summary.jpg';
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+  });
 }
 
 function closeSummary() {
