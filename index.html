@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Toastmasters Timer Log</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F4F6FB; color: #1a1a2e; min-height: 100vh; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+
+  .header { background: #1B4FD8; border-radius: 14px; padding: 1.5rem 2rem; margin-bottom: 1.25rem; }
+  .header h1 { font-size: 22px; font-weight: 600; color: #fff; }
+  .header .meta { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .meta-field { display: flex; flex-direction: column; gap: 5px; }
+  .meta-field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; color: #fff; }
+  .meta-field input { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); border-radius: 7px; color: #fff; padding: 6px 12px; font-size: 14px; font-family: inherit; width: 220px; }
+  .meta-field input::placeholder { color: rgba(255,255,255,0.5); }
+  .meta-field input:focus { outline: none; background: rgba(255,255,255,0.25); }
+
+  .live-banner { background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 0.6rem 1rem; font-size: 13px; color: #92400E; display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #F59E0B; flex-shrink: 0; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  .export-bar { display: flex; justify-content: flex-end; margin-bottom: 1.25rem; }
+  .exp-btn { background: #fff; color: #1B4FD8; border: 1.5px solid #1B4FD8; border-radius: 8px; padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .exp-btn:hover { background: #EEF3FF; }
+
+  .section { background: #fff; border: 1px solid #E2E8F4; border-radius: 14px; margin-bottom: 1.25rem; overflow: hidden; box-shadow: 0 1px 4px rgba(27,79,216,0.04); }
+  .section-header { background: #EEF3FF; padding: 0.85rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #D1DCF5; }
+  .section-header h2 { font-size: 13px; font-weight: 600; color: #1B4FD8; text-transform: uppercase; letter-spacing: 0.08em; }
+  .add-btn { background: #1B4FD8; color: #fff; border: none; border-radius: 7px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .add-btn:hover { background: #1641b5; }
+
+  .cols-hd { display: grid; grid-template-columns: 1.8fr 90px 90px 110px 120px 80px; gap: 10px; padding: 0.5rem 1.5rem 0.2rem; }
+  .col-label { font-size: 11px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+
+  .row { display: grid; grid-template-columns: 1.8fr 90px 90px 110px 120px 80px; gap: 10px; align-items: center; padding: 0.65rem 1.5rem; border-top: 1px solid #F1F5F9; }
+  .row input { border: 1px solid #D1DCF5; border-radius: 7px; padding: 6px 10px; font-size: 13px; font-family: inherit; color: #1a1a2e; background: #F8FAFF; width: 100%; }
+  .row input:focus { outline: none; border-color: #1B4FD8; background: #fff; }
+
+  .result-sel { border: 1px solid #D1DCF5; border-radius: 7px; padding: 6px 10px; font-size: 13px; font-family: inherit; color: #1a1a2e; background: #F8FAFF; width: 100%; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  .result-sel:focus { outline: none; border-color: #1B4FD8; }
+  .result-sel.sel-pass { background-color: #D1FAE5; border-color: #6EE7B7; color: #065F46; font-weight: 600; }
+  .result-sel.sel-fail { background-color: #FEE2E2; border-color: #FCA5A5; color: #991B1B; font-weight: 600; }
+
+  .del-btn { background: #fff; border: 1px solid #FECACA; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; color: #DC2626; font-family: inherit; width: 100%; }
+  .del-btn:hover { background: #FEF2F2; border-color: #DC2626; }
+
+  .empty { padding: 1.25rem 1.5rem; font-size: 13px; color: #94A3B8; font-style: italic; }
+  .footer-note { font-size: 12px; color: #94A3B8; text-align: center; margin-top: 1.5rem; }
+
+  .print-overlay { display: none; position: fixed; inset: 0; background: #fff; z-index: 1000; padding: 3rem; overflow-y: auto; font-family: inherit; }
+  .print-overlay.visible { display: block; }
+  .po-actions { display: flex; gap: 10px; margin-bottom: 2rem; }
+  .po-print-btn { background: #1B4FD8; color: #fff; border: none; border-radius: 8px; padding: 9px 22px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .po-print-btn:hover { background: #1641b5; }
+  .po-close-btn { background: #fff; border: 1px solid #D1DCF5; border-radius: 8px; padding: 9px 22px; font-size: 13px; cursor: pointer; color: #64748B; font-family: inherit; }
+  .po-close-btn:hover { border-color: #94A3B8; }
+  .po-header { border-bottom: 3px solid #1B4FD8; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+  .po-title { font-size: 22px; font-weight: 700; color: #1B4FD8; }
+  .po-meta { display: flex; gap: 2rem; margin-top: 0.6rem; flex-wrap: wrap; }
+  .po-meta span { font-size: 13px; color: #64748B; }
+  .po-meta strong { color: #1a1a2e; font-weight: 600; }
+  .po-summary { display: flex; gap: 14px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .po-stat { background: #EEF3FF; border-radius: 10px; padding: 0.8rem 1.2rem; min-width: 100px; }
+  .po-stat .sv { font-size: 26px; font-weight: 700; color: #1B4FD8; }
+  .po-stat .sl { font-size: 11px; color: #1B4FD8; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 3px; }
+  .po-section { margin-bottom: 1.75rem; }
+  .po-section h3 { font-size: 12px; font-weight: 700; color: #1B4FD8; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 0.6rem; padding-bottom: 5px; border-bottom: 1px solid #D1DCF5; }
+  .po-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  .po-table col:nth-child(1) { width: 40%; }
+  .po-table col:nth-child(2) { width: 20%; }
+  .po-table col:nth-child(3) { width: 20%; }
+  .po-table col:nth-child(4) { width: 20%; }
+  .po-table th { text-align: left; font-size: 11px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 10px; border-bottom: 1px solid #E2E8F0; }
+  .po-table td { padding: 8px 10px; border-bottom: 1px solid #F1F5F9; color: #1a1a2e; word-break: break-word; }
+  .po-table tr:last-child td { border-bottom: none; }
+  .po-footer { margin-top: 2.5rem; border-top: 1px solid #E2E8F0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .po-footer span { font-size: 12px; color: #94A3B8; }
+  @media print { .po-actions { display: none !important; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>Toastmasters Timer Log</h1>
+    <div class="meta">
+      <div class="meta-field"><label>Club Name</label><input id="clubName" value="Speech Weavers" /></div>
+      <div class="meta-field"><label>Meeting Date</label><input id="meetingDate" type="date" /></div>
+      <div class="meta-field"><label>Timer's Name</label><input id="timerName" placeholder="Your name" /></div>
+    </div>
+  </div>
+
+  <div class="live-banner"><div class="dot"></div><span>Live log — members can bookmark or reload this page to see the latest times</span></div>
+  <div class="export-bar"><button class="exp-btn" onclick="openSummary()">Export / Print Summary</button></div>
+
+  <div class="section">
+    <div class="section-header"><h2>Prepared Speeches</h2><button class="add-btn" onclick="addRow('prepared')">+ Add Speaker</button></div>
+    <div class="cols-hd">
+      <div class="col-label">Speaker Name</div><div class="col-label">Min</div><div class="col-label">Max</div>
+      <div class="col-label">Time Taken</div><div class="col-label">Result</div><div class="col-label"></div>
+    </div>
+    <div id="prepared-list"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header"><h2>Table Topics</h2><button class="add-btn" onclick="addRow('topics')">+ Add Speaker</button></div>
+    <div class="cols-hd">
+      <div class="col-label">Speaker Name</div><div class="col-label">Min</div><div class="col-label">Max</div>
+      <div class="col-label">Time Taken</div><div class="col-label">Result</div><div class="col-label"></div>
+    </div>
+    <div id="topics-list"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header"><h2>Evaluators</h2><button class="add-btn" onclick="addRow('eval')">+ Add Evaluator</button></div>
+    <div class="cols-hd">
+      <div class="col-label">Evaluator Name</div><div class="col-label">Min</div><div class="col-label">Max</div>
+      <div class="col-label">Time Taken</div><div class="col-label">Result</div><div class="col-label"></div>
+    </div>
+    <div id="eval-list"></div>
+  </div>
+
+  <div class="footer-note">Toastmasters Timer Log &mdash; session data resets on page close.</div>
+</div>
+
+<div class="print-overlay" id="print-overlay"></div>
+
+<script>
+var state = { prepared: [], topics: [], eval: [] };
+var idCounter = 0;
+var defaults = {
+  prepared: { min: '', max: '' },
+  topics:   { min: '1:00', max: '2:00' },
+  eval:     { min: '', max: '' }
+};
+
+function addRow(type) {
+  idCounter++;
+  state[type].push({ id: idCounter, name: '', min: defaults[type].min, max: defaults[type].max, taken: '', result: '' });
+  renderSection(type);
+}
+
+function deleteRow(type, id) {
+  state[type] = state[type].filter(function(r) { return r.id !== id; });
+  renderSection(type);
+}
+
+function onResultChange(type, id, val) {
+  for (var i = 0; i < state[type].length; i++) {
+    if (state[type][i].id === id) {
+      state[type][i].result = val;
+      // update dropdown styling without full re-render
+      var sel = document.getElementById('res-' + type + '-' + id);
+      if (sel) {
+        sel.className = 'result-sel' + (val === 'pass' ? ' sel-pass' : val === 'fail' ? ' sel-fail' : '');
+      }
+      break;
+    }
+  }
+}
+
+function renderSection(type) {
+  var el   = document.getElementById(type + '-list');
+  var rows = state[type];
+  if (!rows.length) { el.innerHTML = '<div class="empty">No speakers added yet.</div>'; return; }
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var k = type + '-' + r.id;
+    var selClass = 'result-sel' + (r.result === 'pass' ? ' sel-pass' : r.result === 'fail' ? ' sel-fail' : '');
+    html += '<div class="row">'
+      + '<input value="' + r.name  + '" placeholder="Speaker name" onchange="updateField(\'' + type + '\',' + r.id + ',\'name\',this.value)" />'
+      + '<input value="' + r.min   + '" placeholder="mm:ss"        onchange="updateField(\'' + type + '\',' + r.id + ',\'min\',this.value)" />'
+      + '<input value="' + r.max   + '" placeholder="mm:ss"        onchange="updateField(\'' + type + '\',' + r.id + ',\'max\',this.value)" />'
+      + '<input value="' + r.taken + '" placeholder="mm:ss"        onchange="updateField(\'' + type + '\',' + r.id + ',\'taken\',this.value)" />'
+      + '<select id="res-' + k + '" class="' + selClass + '" onchange="onResultChange(\'' + type + '\',' + r.id + ',this.value)">'
+      + '<option value="">— Result —</option>'
+      + '<option value="pass"' + (r.result === 'pass' ? ' selected' : '') + '>Pass</option>'
+      + '<option value="fail"' + (r.result === 'fail' ? ' selected' : '') + '>Fail</option>'
+      + '</select>'
+      + '<button class="del-btn" onclick="deleteRow(\'' + type + '\',' + r.id + ')">Delete</button>'
+      + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function updateField(type, id, field, val) {
+  for (var i = 0; i < state[type].length; i++) {
+    if (state[type][i].id === id) { state[type][i][field] = val; break; }
+  }
+}
+
+function pLabel(s) {
+  if (s === 'pass') return '<span style="background:#D1FAE5;color:#065F46;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600">Pass</span>';
+  if (s === 'fail') return '<span style="background:#FEE2E2;color:#991B1B;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600">Fail</span>';
+  return '<span style="color:#94A3B8">—</span>';
+}
+
+function buildRows(type) {
+  var rows = state[type];
+  if (!rows.length) return '<tr><td colspan="4" style="padding:10px;font-style:italic;color:#94A3B8">No entries</td></tr>';
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r     = rows[i];
+    var range = (r.min && r.max) ? r.min + ' – ' + r.max : '—';
+    html += '<tr>'
+      + '<td>' + (r.name || '<span style="color:#94A3B8">Unnamed</span>') + '</td>'
+      + '<td>' + range + '</td>'
+      + '<td style="font-weight:600">' + (r.taken || '—') + '</td>'
+      + '<td>' + pLabel(r.result) + '</td>'
+      + '</tr>';
+  }
+  return html;
+}
+
+function countResults() {
+  var pass = 0, fail = 0;
+  var types = ['prepared', 'topics', 'eval'];
+  for (var t = 0; t < types.length; t++) {
+    var rows = state[types[t]];
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].result === 'pass') pass++;
+      else if (rows[i].result === 'fail') fail++;
+    }
+  }
+  return { pass: pass, fail: fail };
+}
+
+function totalSpeakers() {
+  return state.prepared.length + state.topics.length + state.eval.length;
+}
+
+function openSummary() {
+  var club  = document.getElementById('clubName').value || '—';
+  var date  = document.getElementById('meetingDate').value;
+  var timer = document.getElementById('timerName').value || '—';
+  var fmtDate = date
+    ? new Date(date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    : '—';
+  var c  = countResults();
+  var ol = document.getElementById('print-overlay');
+  ol.innerHTML =
+    '<div class="po-actions">'
+    + '<button class="po-print-btn" onclick="window.print()">Print / Save as PDF</button>'
+    + '<button class="po-close-btn" onclick="closeSummary()">Close</button>'
+    + '</div>'
+    + '<div class="po-header">'
+    + '<div class="po-title">Meeting Timer Summary</div>'
+    + '<div class="po-meta">'
+    + '<span><strong>Club:</strong> ' + club + '</span>'
+    + '<span><strong>Date:</strong> ' + fmtDate + '</span>'
+    + '<span><strong>Timer:</strong> ' + timer + '</span>'
+    + '<span><strong>Generated:</strong> ' + new Date().toLocaleTimeString() + '</span>'
+    + '</div></div>'
+    + '<div class="po-summary">'
+    + '<div class="po-stat"><div class="sv">' + totalSpeakers() + '</div><div class="sl">Total Speakers</div></div>'
+    + '<div class="po-stat" style="background:#D1FAE5"><div class="sv" style="color:#065F46">' + c.pass + '</div><div class="sl" style="color:#065F46">Pass</div></div>'
+    + '<div class="po-stat" style="background:#FEE2E2"><div class="sv" style="color:#991B1B">' + c.fail + '</div><div class="sl" style="color:#991B1B">Fail</div></div>'
+    + '</div>'
+    + '<div class="po-section"><h3>Prepared Speeches</h3>'
+    + '<table class="po-table"><colgroup><col/><col/><col/><col/></colgroup>'
+    + '<thead><tr><th>Speaker</th><th>Range</th><th>Time Taken</th><th>Result</th></tr></thead>'
+    + '<tbody>' + buildRows('prepared') + '</tbody></table></div>'
+    + '<div class="po-section"><h3>Table Topics</h3>'
+    + '<table class="po-table"><colgroup><col/><col/><col/><col/></colgroup>'
+    + '<thead><tr><th>Speaker</th><th>Range</th><th>Time Taken</th><th>Result</th></tr></thead>'
+    + '<tbody>' + buildRows('topics') + '</tbody></table></div>'
+    + '<div class="po-section"><h3>Evaluators</h3>'
+    + '<table class="po-table"><colgroup><col/><col/><col/><col/></colgroup>'
+    + '<thead><tr><th>Speaker</th><th>Range</th><th>Time Taken</th><th>Result</th></tr></thead>'
+    + '<tbody>' + buildRows('eval') + '</tbody></table></div>'
+    + '<div class="po-footer">'
+    + '<span>Timer: ' + timer + ' &nbsp;|&nbsp; ' + club + ' &nbsp;|&nbsp; ' + fmtDate + '</span>'
+    + '<span style="color:#1B4FD8;font-weight:600">Toastmasters Timer Log</span>'
+    + '</div>';
+  ol.classList.add('visible');
+}
+
+function closeSummary() {
+  document.getElementById('print-overlay').classList.remove('visible');
+}
+
+renderSection('prepared');
+renderSection('topics');
+renderSection('eval');
+document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
